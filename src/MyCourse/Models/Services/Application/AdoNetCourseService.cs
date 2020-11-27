@@ -4,16 +4,19 @@ using System.Data;
 using System.Threading.Tasks;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ViewModels;
+using Microsoft.Extensions.Options;
+using MyCourse.Models.Options;
 
 namespace MyCourse.Models.Services.Application
 {
     public class AdoNetCourseService : ICourseService
     {
         private readonly IDatabaseAccessor db;
-
-        public AdoNetCourseService(IDatabaseAccessor db)
+        private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
+        public AdoNetCourseService(IDatabaseAccessor db, IOptionsMonitor<CoursesOptions> coursesOptions)
         {
             this.db = db;
+            this.coursesOptions = coursesOptions;
         }
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
@@ -41,9 +44,12 @@ namespace MyCourse.Models.Services.Application
             return courseDetailViewModel; 
         }
 
-        public async Task<List<CourseViewModel>> GetCoursesAsync()
+        public async Task<List<CourseViewModel>> GetCoursesAsync(string search, int page)
         {
-            FormattableString query = $"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses";
+            page= Math.Max(1,page);
+            int limit = coursesOptions.CurrentValue.PerPage;
+            int offset = (page -1) * limit;
+            FormattableString query = $"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses where Title LIKE {'%' + search + '%'} LIMIT {limit} OFFSET {offset}";
             DataSet  dataset = await db.QueryAsync(query);
             var dataTable = dataset.Tables[0];
             var courseList = new List<CourseViewModel>();

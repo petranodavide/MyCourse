@@ -11,7 +11,7 @@ namespace MyCourse.Models.Services.Application
     //Scrivo prima l'intefaccia e poi la sviluppo
         public interface ICourseService
     {
-         Task<List<CourseViewModel>> GetCoursesAsync();
+         Task<List<CourseViewModel>> GetCoursesAsync(string search, int page);
          Task<CourseDetailViewModel> GetCourseAsync(int id);
 
          

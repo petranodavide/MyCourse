@@ -18,11 +18,11 @@ namespace MyCourse.Controllers
             this.courseService = courseService;
 
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search, int page, string orderby, bool ascending)
         {
             //return Content("Sono Index");  
             //         var courseService = new CourseService(); //istanzio classe servizio applicativo
-            List<CourseViewModel> courses = await courseService.GetCoursesAsync(); //Richiamo il metodo da servizio applicativo di elenco corsi
+            List<CourseViewModel> courses = await courseService.GetCoursesAsync(search, page); //Richiamo il metodo da servizio applicativo di elenco corsi
             return View(courses);
         }
 

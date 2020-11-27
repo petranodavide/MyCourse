@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using MyCourse.Models.Services.Application;
 using MyCourse.Models.Services.Infrastructure;
+using MyCourse.Models.Options;
+using Microsoft.Extensions.Configuration;
 
 namespace MyCourse
 {
@@ -15,12 +17,21 @@ namespace MyCourse
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
             //Attenzione costruisci una classe partendo dall'interfaccia
             services.AddTransient<ICourseService, AdoNetCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
+            //Options
+            services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));
+            services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
